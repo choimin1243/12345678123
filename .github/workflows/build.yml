@@ -28,7 +28,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pyqt5 pyinstaller pywin32 pywin32-ctypes
-          python -m pywin32_postinstall -install
 
       - name: PyInstaller로 exe 빌드
         run: |
