@@ -6,10 +6,10 @@ on:
   push:
     branches: [ main ]
     tags:
-      - 'v*'          # v1.0.0 같은 태그 푸시 시 릴리즈 자동 생성
+      - 'v*'
   pull_request:
     branches: [ main ]
-  workflow_dispatch:  # 수동 실행 버튼
+  workflow_dispatch:
 
 jobs:
   build-windows:
@@ -27,7 +27,8 @@ jobs:
       - name: 의존성 설치
         run: |
           python -m pip install --upgrade pip
-          pip install pyqt5 pyinstaller pywin32
+          pip install pyqt5 pyinstaller pywin32 pywin32-ctypes
+          python -m pywin32_postinstall -install
 
       - name: PyInstaller로 exe 빌드
         run: |
@@ -40,7 +41,6 @@ jobs:
           path: dist/HWP합치기.exe
           retention-days: 30
 
-      # 태그(v*) 푸시 시 GitHub Release 자동 생성
       - name: GitHub Release 생성
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
@@ -60,24 +60,3 @@ jobs:
             - 한글(HWP) 설치
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
-
----
-
-## 폴더 구조
-```
-your-repo/
-├── .github/
-│   └── workflows/
-│       └── build.yml    ← 이 파일
-├── hwp_merger.py        ← 메인 파이썬 파일
-└── README.md
-```
-
----
-
-## 사용 흐름
-
-**일반 push (main 브랜치)**
-```
-push → 빌드 → Actions 탭에서 아티팩트(.exe) 다운로드
